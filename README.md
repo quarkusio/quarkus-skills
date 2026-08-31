@@ -55,15 +55,15 @@ Check if a Quarkus project's build files are up-to-date by comparing against ref
 
 **Triggers:** "check project", "update quarkus", "is my project up to date", "compare build", "quarkus upgrade"
 
-### migrate-spring-to-quarkus
+### spring2quarkus
 
-Migrate Spring Boot applications to Quarkus using a modular, gate-driven approach. Supports both Spring compatibility extensions and full Quarkus migration paths. Use this skill when you want to:
+Migrate Spring Boot applications to Quarkus using a layered approach combined with deterministic validator scripts. The skill requires the original codebase and the migrated one be in separate directories in order to make use of the validators. Use this skill when you want to:
 
 - Migrate a Spring Boot application to Quarkus
 - Convert Spring annotations (DI, REST, Data, Security) to Quarkus equivalents
 - Migrate Spring build files, configuration, frontend (Thymeleaf/JSP), and tests
 
-**Triggers:** "spring to quarkus", "quarkus migration", "replace spring", "migrate pom.xml"
+**Triggers:** "spring2quarkus", "spring to quarkus", "quarkus migration"
 
 ## Learn More
 
