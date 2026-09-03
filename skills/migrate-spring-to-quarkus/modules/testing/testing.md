@@ -2,7 +2,7 @@
 
 Migrate test infrastructure from Spring Boot Test to Quarkus Test.
 
-Load [references/annotation-map.md](../references/annotation-map.md) — see the Testing section for full mapping.
+Load [references/annotation-map.md](../../references/annotation-map.md) — see the Testing section for full mapping.
 
 ## What to do
 

@@ -15,7 +15,7 @@ Remove leftover Spring artifacts that survived the per-module migration: orphane
 
 If the main class was already removed during the code module, mark this as done.
 
-Otherwise, follow the instructions in the [code module — Main Class Removal](./code.md#main-class-removal).
+Otherwise, follow the instructions in the [code module — Main Class Removal](../code/code.md#main-class-removal).
 
 ## Leftover Spring imports
 

@@ -71,7 +71,7 @@ After the user has chosen a strategy, check if the target project is a git repos
 
 > **Migration workflow:** Each migration run can be isolated in its own branch (`migration/run-01`, `migration/run-02`, ...) created from `main`. The branch will contain a single commit with all changes plus a migration report. A draft PR against `main` will be created for review — it is never merged, it serves as a permanent diff and discussion record. **Would you like to use this workflow?**
 
-- **User accepts** → follow [modules/git.md](modules/git.md) — **Pre-migration** section. Propose the branch name and wait for confirmation before creating it.
+- **User accepts** → follow [modules/git/git.md](modules/git/git.md) — **Pre-migration** section. Propose the branch name and wait for confirmation before creating it.
 - **User declines** → skip git management entirely, proceed with migration in the current branch.
 - **Not a git repo** → inform the user, skip git management, proceed normally.
 
@@ -88,14 +88,14 @@ After the user has chosen a strategy, check if the target project is a git repos
 - For each module, evaluate whether it applies to this project. A module executes only when its gate status is: **PASS**.
 - Inspect the project to determine the gate result — do not rely on blind grep commands; use your understanding of the codebase.
 
-| Module                          | Gate Check                                                                                                                | Gate Result                                                                              |
-|---------------------------------|---------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------|
-| [jdk](modules/jdk.md)           | JDK 21+ required                                   | **ALWAYS** -- stop migration if < 21 |
-| [build](modules/build.md)       | Spring Boot parent/starters/`spring-boot-maven-plugin` in `pom.xml`, or Spring Boot/`io.spring.dependency-management` plugins in `build.gradle(.kts)` | **PASS** if Spring Boot build markers found; **SKIP** otherwise                          |
-| [code](modules/code.md)         | Spring annotations in Java sources (`@Component`, `@Service`, `@Controller`, `@Repository`, `@Entity`, `@Autowired`, etc.) | **PASS** if Spring annotations found; **SKIP** otherwise                                 |
-| [frontend](modules/frontend.md) | Thymeleaf/JSP templates in `templates/` or static resources in `static/`                                                  | **PASS** if view layer found; **SKIP** otherwise                                         |
-| [testing](modules/testing.md)   | Spring test annotations in test sources (`@SpringBootTest`, `@WebMvcTest`, `@MockBean`)                                   | **PASS** if Spring tests found; **SKIP** otherwise                                       |
-| [cleanup](modules/cleanup.md)   | Leftover Spring artifacts after all other modules                                                                          | **ALWAYS** — runs after all other modules                                                |
+| Module                                        | Gate Check                                                                                                                | Gate Result                                                                              |
+|-----------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------|
+| [jdk](modules/jdk/jdk.md)                     | JDK 21+ required                                   | **ALWAYS** -- stop migration if < 21 |
+| [build](modules/build/build.md)               | Spring Boot parent/starters/`spring-boot-maven-plugin` in `pom.xml`, or Spring Boot/`io.spring.dependency-management` plugins in `build.gradle(.kts)` | **PASS** if Spring Boot build markers found; **SKIP** otherwise                          |
+| [code](modules/code/code.md)                  | Spring annotations in Java sources (`@Component`, `@Service`, `@Controller`, `@Repository`, `@Entity`, `@Autowired`, etc.) | **PASS** if Spring annotations found; **SKIP** otherwise                                 |
+| [frontend](modules/frontend/frontend.md)      | Thymeleaf/JSP templates in `templates/` or static resources in `static/`                                                  | **PASS** if view layer found; **SKIP** otherwise                                         |
+| [testing](modules/testing/testing.md)         | Spring test annotations in test sources (`@SpringBootTest`, `@WebMvcTest`, `@MockBean`)                                   | **PASS** if Spring tests found; **SKIP** otherwise                                       |
+| [cleanup](modules/cleanup/cleanup.md)         | Leftover Spring artifacts after all other modules                                                                          | **ALWAYS** — runs after all other modules                                                |
 
 ### Execution Protocol
 
@@ -116,9 +116,9 @@ FOR module IN [build, code, frontend, testing, cleanup]:
 
 ### Running Individual Modules
 
-To run a single module outside the full migration flow, read its file directly:
+To run a single module outside the full migration flow, read all the files in the module folder directly:
 
-- "Read `modules/build.md` and execute it"
+- "Read `modules/build/build.md` and execute it"
 - "Run only the frontend module"
 - "Re-run the cleanup module"
 
@@ -196,4 +196,4 @@ Present the review as a structured report:
 
 ## Step 6: Commit and PR (only if git workflow was accepted)
 
-Follow [modules/git.md](modules/git.md) — **Post-migration** section. Ask the user for confirmation before committing, and again before pushing / creating the draft PR. Do not proceed with either action without explicit user approval.
+Follow [modules/git/git.md](modules/git/git.md) — **Post-migration** section. Ask the user for confirmation before committing, and again before pushing / creating the draft PR. Do not proceed with either action without explicit user approval.

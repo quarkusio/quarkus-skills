@@ -2,7 +2,7 @@
 
 Migrate all Java source code from Spring patterns to Quarkus equivalents.
 
-Load [references/annotation-map.md](../references/annotation-map.md) before starting. It contains the complete annotation mapping tables for DI, REST, Data, Security, Cache, Scheduling, and Lifecycle.
+Load [references/annotation-map.md](../../references/annotation-map.md) before starting. It contains the complete annotation mapping tables for DI, REST, Data, Security, Cache, Scheduling, and Lifecycle.
 
 ## What to do
 

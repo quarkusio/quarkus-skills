@@ -8,11 +8,11 @@ Migrate the build descriptor and configuration files from Spring Boot to Quarkus
 
 | File | Build tool | Sub-module |
 |---|---|---|
-| `pom.xml` | Maven | [build-maven.md](build-maven.md) |
-| `build.gradle` or `build.gradle.kts` | Gradle | [build-gradle.md](build-gradle.md) |
+| `pom.xml` | Maven | [maven.md](maven.md) |
+| `build.gradle` or `build.gradle.kts` | Gradle | [gradle.md](gradle.md) |
 
-- Load [references/dependency-map.md](../references/dependency-map.md) and [references/config-map.md](../references/config-map.md) before starting.
-- Then load and execute the matching submodule above. 
+- Load [references/dependency-map.md](../../references/dependency-map.md) and [references/config-map.md](../../references/config-map.md) before starting.
+- Then load and execute the matching submodule above.
 - After the submodule completes, return here and continue with the Configuration Migration and Watch Out sections below.
 
 ## Configuration Migration
@@ -29,7 +29,6 @@ Rename Spring properties to Quarkus equivalents using config-map.md. Key mapping
 When the project has no `application-{profile}.properties` files, prefix datasource connection properties with `%prod.` so they only apply in production. This lets Quarkus Dev Services automatically start a containerized database in dev and test modes — no local database setup needed.
 
 ```properties
-
 # connection details only for prod
 %prod.quarkus.datasource.jdbc.url=jdbc:mysql://127.0.0.1:3306/todo
 %prod.quarkus.datasource.username=root
