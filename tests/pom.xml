@@ -74,7 +74,7 @@
                             <transformers>
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>io.quarkus.ai.launcher.Main</mainClass>
+                                    <mainClass>io.quarkus.ai.harness.launcher.Main</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>
@@ -104,7 +104,7 @@
                         <argument>-Dai.sanitize=${ai.sanitize}</argument>
                         <argument>-classpath</argument>
                         <classpath/>
-                        <argument>io.quarkus.ai.launcher.Main</argument>
+                        <argument>io.quarkus.ai.harness.launcher.Main</argument>
                     </arguments>
                 </configuration>
             </plugin>
