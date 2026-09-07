@@ -17,10 +17,12 @@
 
         <jackson-3.version>3.2.2</jackson-3.version>
         <junit.version>5.12.2</junit.version>
-        <surefire.version>3.5.2</surefire.version>
 
-        <!-- Override via -Dai.provider and/or -Dai.model.
-             Run: pi list-models
+        <surefire-plugin.version>3.6.0</surefire-plugin.version>
+        <maven-shade-plugin.version>3.6.2</maven-shade-plugin.version>
+        <exec-maven-plugin.version>3.6.3</exec-maven-plugin.version>
+
+        <!-- List of parameters that we can override
              See tests/README.md for provider setup instructions. -->
         <ai.provider></ai.provider>
         <ai.model></ai.model>
@@ -60,40 +62,8 @@
     <build>
         <plugins>
             <plugin>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>${surefire.version}</version>
-                <configuration>
-                    <!-- Stream test output to console in real-time -->
-                    <redirectTestOutputToFile>false</redirectTestOutputToFile>
-                    <useFile>false</useFile>
-                    <!-- Exclude integration test by default -->
-                    <excludes>
-                        <exclude>**/MigrationTest.java</exclude>
-                    </excludes>
-                    <!-- Pass config as system properties -->
-                    <systemPropertyVariables>
-                        <ai.provider>${ai.provider}</ai.provider>
-                        <ai.model>${ai.model}</ai.model>
-                        <ai.strategy>${ai.strategy}</ai.strategy>
-                        <ai.timeout>${ai.timeout}</ai.timeout>
-                        <ai.cmd>${ai.cmd}</ai.cmd>
-                        <ai.projects>${ai.projects}</ai.projects>
-                        <ai.skills>${ai.skills}</ai.skills>
-                        <runs>${runs}</runs>
-                        <runChecks>${runChecks}</runChecks>
-                        <ai.review>${ai.review}</ai.review>
-                        <ai.enabled>${ai.enabled}</ai.enabled>
-                        <ai.prompt>${ai.prompt}</ai.prompt>
-                        <ai.args>${ai.args}</ai.args>
-                        <ai.sanitize>${ai.sanitize}</ai.sanitize>
-                    </systemPropertyVariables>
-                    <!-- Long-running tests -->
-                    <forkedProcessTimeoutInSeconds>3600</forkedProcessTimeoutInSeconds>
-                </configuration>
-            </plugin>
-            <plugin>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.6.0</version>
+                <version>${maven-shade-plugin.version}</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -102,7 +72,8 @@
                         </goals>
                         <configuration>
                             <transformers>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <mainClass>io.quarkus.ai.launcher.Main</mainClass>
                                 </transformer>
                             </transformers>
@@ -113,7 +84,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
-                <version>3.5.0</version>
+                <version>${exec-maven-plugin.version}</version>
                 <configuration>
                     <executable>java</executable>
                     <arguments>
@@ -137,6 +108,15 @@
                     </arguments>
                 </configuration>
             </plugin>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${surefire-plugin.version}</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/MigrationTest.java</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -147,12 +127,33 @@
                 <plugins>
                     <plugin>
                         <artifactId>maven-surefire-plugin</artifactId>
-                        <version>${surefire.version}</version>
+                        <version>${surefire-plugin.version}</version>
                         <configuration>
                             <excludes combine.self="override"/>
+                            <!-- Stream test output to console in real-time -->
+                            <redirectTestOutputToFile>false</redirectTestOutputToFile>
+                            <useFile>false</useFile>
                             <includes>
                                 <include>**/MigrationTest.java</include>
                             </includes>
+                            <systemPropertyVariables>
+                                <ai.provider>${ai.provider}</ai.provider>
+                                <ai.model>${ai.model}</ai.model>
+                                <ai.strategy>${ai.strategy}</ai.strategy>
+                                <ai.timeout>${ai.timeout}</ai.timeout>
+                                <ai.cmd>${ai.cmd}</ai.cmd>
+                                <ai.projects>${ai.projects}</ai.projects>
+                                <ai.skills>${ai.skills}</ai.skills>
+                                <runs>${runs}</runs>
+                                <runChecks>${runChecks}</runChecks>
+                                <ai.review>${ai.review}</ai.review>
+                                <ai.enabled>${ai.enabled}</ai.enabled>
+                                <ai.prompt>${ai.prompt}</ai.prompt>
+                                <ai.args>${ai.args}</ai.args>
+                                <ai.sanitize>${ai.sanitize}</ai.sanitize>
+                            </systemPropertyVariables>
+                            <!-- Long-running tests -->
+                            <forkedProcessTimeoutInSeconds>3600</forkedProcessTimeoutInSeconds>
                         </configuration>
                     </plugin>
                 </plugins>
