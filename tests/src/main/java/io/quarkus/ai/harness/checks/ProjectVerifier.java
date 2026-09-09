@@ -94,7 +94,6 @@ public class ProjectVerifier {
         Process process = null;
         try {
             process = startApp();
-
             if (!waitForReady(process)) {
                 dumpStartupLog(startupLog, "app failed to start");
                 return false;
