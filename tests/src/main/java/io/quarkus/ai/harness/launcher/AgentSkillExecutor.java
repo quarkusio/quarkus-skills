@@ -243,18 +243,7 @@ public class AgentSkillExecutor {
                 // 4. Run checks
                 List<String> failures = new ArrayList<>();
                 if (hasChecks) {
-                    ProjectVerifier checks = new ProjectVerifier(workDir);
-                    System.out.println("  Running checks...");
-
-                    config.checks().forEach((checkName, checkConfig) -> {
-                        System.out.print("    " + checkName + " ... ");
-                        boolean passed = checks.runCheck(checkName, checkConfig);
-                        result.addCheck(checkName, passed);
-                        System.out.println(passed ? "PASS" : "FAIL");
-                        if (!passed) {
-                            failures.add(checkName);
-                        }
-                    });
+                    failures.addAll(runChecks(config, workDir, result));
                 } else {
                     System.out.println("  Skipping checks" + (!aiChecks() ? " (runChecks=false)" : " (none defined)"));
                 }
@@ -309,6 +298,34 @@ public class AgentSkillExecutor {
         if (multipleSkills || multipleProjects) {
             tracker.writeBenchmarkComparisonReport(skillsComparisonResults);
         }
+    }
+
+    /**
+     * Runs the verification checks defined in a project's configuration against
+     * the given work directory. Results are printed to stdout.
+     *
+     * @param config  the project configuration (must have non-empty checks)
+     * @param workDir the directory containing the project to verify
+     * @param result  optional result to record check outcomes into; may be {@code null}
+     * @return the list of check names that failed (empty if all passed)
+     */
+    public static List<String> runChecks(ProjectConfig config, Path workDir, MigrationResult result) {
+        ProjectVerifier verifier = new ProjectVerifier(workDir);
+        List<String> failures = new ArrayList<>();
+        System.out.println("  Running checks...");
+
+        config.checks().forEach((checkName, checkConfig) -> {
+            System.out.print("    " + checkName + " ... ");
+            boolean passed = verifier.runCheck(checkName, checkConfig);
+            if (result != null) {
+                result.addCheck(checkName, passed);
+            }
+            System.out.println(passed ? "PASS" : "FAIL");
+            if (!passed) {
+                failures.add(checkName);
+            }
+        });
+        return failures;
     }
 
     private static String extractSkillShortName(String skillRef) {

@@ -64,57 +64,25 @@ public class ProjectVerifier {
      * Check that the application starts up and responds to HTTP requests.
      */
     public boolean startsUp() {
-        int port = 18080;
         Path startupLog = projectDir.resolve(".startup.log");
         Process process = null;
         try {
-            ProcessBuilder pb = new ProcessBuilder(
-                    getMvnCmd(), "-q", "quarkus:dev",
-                    "-Dquarkus.http.port=" + port,
-                    "-Dquarkus.devservices.enabled=false",
-                    "-Dquarkus.analytics.disabled=true",
-                    "-Dquarkus.console.enabled=false"
-            ).directory(projectDir.toFile())
-             .redirectErrorStream(true)
-             .redirectOutput(startupLog.toFile());
-
-            process = pb.start();
-
-            // Poll for readiness
-            for (int i = 0; i < 30; i++) {
-                Thread.sleep(2000);
-
-                if (!process.isAlive()) {
-                    dumpStartupLog(startupLog, "process died (exit=" + process.exitValue() + ")");
-                    return false;
-                }
-
-                if (httpOk("http://localhost:" + port + "/q/health/ready") ||
-                    httpOk("http://localhost:" + port + "/")) {
-                    return true;
-                }
+            process = startApp();
+            if (!waitForReady(process)) {
+                dumpStartupLog(startupLog, "app failed to start");
+                return false;
             }
-            dumpStartupLog(startupLog, "timed out after 60s waiting for HTTP readiness on port " + port);
-            return false;
-
+            return true;
         } catch (Exception e) {
             dumpStartupLog(startupLog, e.getMessage());
             return false;
         } finally {
-            if (process != null) {
-                process.descendants().forEach(ProcessHandle::destroyForcibly);
-                process.destroyForcibly();
-                try {
-                    process.waitFor(10, TimeUnit.SECONDS);
-                } catch (InterruptedException ignored) {
-                }
-            }
+            stopApp(process);
         }
     }
 
     /**
      * Start the app, hit each endpoint defined in project.yaml, and verify responses.
-     * Disabling the starts-up check as not needed.
      */
     public boolean smokeTest(List<EndpointCheck> endpoints) {
         if (endpoints == null || endpoints.isEmpty()) {
@@ -126,11 +94,13 @@ public class ProjectVerifier {
         Process process = null;
         try {
             process = startApp();
+
             if (!waitForReady(process)) {
                 dumpStartupLog(startupLog, "app failed to start");
                 return false;
             }
 
+            System.out.println("Calling the endpoints to validate");
             boolean allPassed = true;
             try (HttpClient client = HttpClient.newBuilder()
                     .connectTimeout(Duration.ofSeconds(5))
@@ -156,8 +126,16 @@ public class ProjectVerifier {
 
     private void dumpStartupLog(Path logFile, String reason) {
         System.err.println("    starts-up FAILED: " + reason);
-        System.err.println("    .startup.log (" + logFile + "):");
+        dumpLogFile(logFile, ".startup.log (maven)");
+    }
+
+    private void dumpLogFile(Path logFile, String label) {
+        System.err.println("    " + label + " (" + logFile + "):");
         try {
+            if (!Files.exists(logFile)) {
+                System.err.println("      (file not found)");
+                return;
+            }
             Files.readAllLines(logFile).forEach(line -> System.err.println("      " + line));
         } catch (IOException e) {
             System.err.println("      (could not read log: " + e.getMessage() + ")");
@@ -199,14 +177,16 @@ public class ProjectVerifier {
     // -- app lifecycle helpers --
 
     private Process startApp() throws IOException {
+        Path startupLog = projectDir.resolve(".startup.log");
         ProcessBuilder pb = new ProcessBuilder(
-                getMvnCmd(), "-q", "quarkus:dev",
+                getMvnCmd(), "quarkus:dev",
                 "-Dquarkus.http.port=" + APP_PORT,
                 "-Dquarkus.devservices.enabled=false",
-                "-Dquarkus.analytics.disabled=true"
+                "-Dquarkus.analytics.disabled=true",
+                "-Dquarkus.console.enabled=false"
         ).directory(projectDir.toFile())
          .redirectErrorStream(true)
-         .redirectOutput(projectDir.resolve(".startup.log").toFile());
+         .redirectOutput(startupLog.toFile());
 
         return pb.start();
     }
@@ -225,6 +205,7 @@ public class ProjectVerifier {
 
     private void stopApp(Process process) {
         if (process != null) {
+            process.descendants().forEach(ProcessHandle::destroyForcibly);
             process.destroyForcibly();
             try {
                 process.waitFor(10, TimeUnit.SECONDS);
@@ -287,7 +268,7 @@ public class ProjectVerifier {
         try {
             var cmd = new java.util.ArrayList<String>();
             cmd.add(getMvnCmd());
-            cmd.add("-q");
+            cmd.add("-B");
             cmd.addAll(java.util.List.of(goals));
 
             Process p = new ProcessBuilder(cmd)

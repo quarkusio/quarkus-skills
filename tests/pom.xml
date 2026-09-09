@@ -85,28 +85,46 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>${exec-maven-plugin.version}</version>
-                <configuration>
-                    <executable>java</executable>
-                    <arguments>
-                        <argument>-Dai.provider=${ai.provider}</argument>
-                        <argument>-Dai.model=${ai.model}</argument>
-                        <argument>-Dai.strategy=${ai.strategy}</argument>
-                        <argument>-Dai.timeout=${ai.timeout}</argument>
-                        <argument>-Dai.cmd=${ai.cmd}</argument>
-                        <argument>-Dai.projects=${ai.projects}</argument>
-                        <argument>-Dai.skills=${ai.skills}</argument>
-                        <argument>-Druns=${runs}</argument>
-                        <argument>-DrunChecks=${runChecks}</argument>
-                        <argument>-Dai.review=${ai.review}</argument>
-                        <argument>-Dai.enabled=${ai.enabled}</argument>
-                        <argument>-Dai.prompt=${ai.prompt}</argument>
-                        <argument>-Dai.args=${ai.args}</argument>
-                        <argument>-Dai.sanitize=${ai.sanitize}</argument>
-                        <argument>-classpath</argument>
-                        <classpath/>
-                        <argument>io.quarkus.ai.harness.launcher.Main</argument>
-                    </arguments>
-                </configuration>
+                <executions>
+                    <execution>
+                        <id>default-cli</id>
+                        <configuration>
+                            <executable>java</executable>
+                            <arguments>
+                                <argument>-Dai.provider=${ai.provider}</argument>
+                                <argument>-Dai.model=${ai.model}</argument>
+                                <argument>-Dai.strategy=${ai.strategy}</argument>
+                                <argument>-Dai.timeout=${ai.timeout}</argument>
+                                <argument>-Dai.cmd=${ai.cmd}</argument>
+                                <argument>-Dai.projects=${ai.projects}</argument>
+                                <argument>-Dai.skills=${ai.skills}</argument>
+                                <argument>-Druns=${runs}</argument>
+                                <argument>-DrunChecks=${runChecks}</argument>
+                                <argument>-Dai.review=${ai.review}</argument>
+                                <argument>-Dai.enabled=${ai.enabled}</argument>
+                                <argument>-Dai.prompt=${ai.prompt}</argument>
+                                <argument>-Dai.args=${ai.args}</argument>
+                                <argument>-Dai.sanitize=${ai.sanitize}</argument>
+                                <argument>-classpath</argument>
+                                <classpath/>
+                                <argument>io.quarkus.ai.harness.launcher.Main</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>checks</id>
+                        <configuration>
+                            <executable>java</executable>
+                            <arguments>
+                                <argument>-Dai.projects=${ai.projects}</argument>
+                                <argument>-Dai.enabled=${ai.enabled}</argument>
+                                <argument>-classpath</argument>
+                                <classpath/>
+                                <argument>io.quarkus.ai.harness.checks.CheckRunner</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
