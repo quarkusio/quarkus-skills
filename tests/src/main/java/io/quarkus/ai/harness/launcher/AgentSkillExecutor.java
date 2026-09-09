@@ -243,7 +243,7 @@ public class AgentSkillExecutor {
                 // 4. Run checks
                 List<String> failures = new ArrayList<>();
                 if (hasChecks) {
-                    failures.addAll(runChecks(config, workDir, result));
+                    failures.addAll(runChecks(config, workDir, Optional.of(result)));
                 } else {
                     System.out.println("  Skipping checks" + (!aiChecks() ? " (runChecks=false)" : " (none defined)"));
                 }
@@ -306,10 +306,10 @@ public class AgentSkillExecutor {
      *
      * @param config  the project configuration (must have non-empty checks)
      * @param workDir the directory containing the project to verify
-     * @param result  optional result to record check outcomes into; may be {@code null}
+     * @param result  if present, check outcomes are recorded into the {@link MigrationResult}
      * @return the list of check names that failed (empty if all passed)
      */
-    public static List<String> runChecks(ProjectConfig config, Path workDir, MigrationResult result) {
+    public static List<String> runChecks(ProjectConfig config, Path workDir, Optional<MigrationResult> result) {
         ProjectVerifier verifier = new ProjectVerifier(workDir);
         List<String> failures = new ArrayList<>();
         System.out.println("  Running checks...");
@@ -317,9 +317,7 @@ public class AgentSkillExecutor {
         config.checks().forEach((checkName, checkConfig) -> {
             System.out.print("    " + checkName + " ... ");
             boolean passed = verifier.runCheck(checkName, checkConfig);
-            if (result != null) {
-                result.addCheck(checkName, passed);
-            }
+            result.ifPresent(migrationResult -> migrationResult.addCheck(checkName, passed));
             System.out.println(passed ? "PASS" : "FAIL");
             if (!passed) {
                 failures.add(checkName);

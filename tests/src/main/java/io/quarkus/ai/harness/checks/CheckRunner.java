@@ -6,6 +6,7 @@ import io.quarkus.ai.harness.launcher.AgentSkillExecutor.ProjectEntry;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * CLI entry point for running project verification checks independently of
@@ -53,7 +54,7 @@ public class CheckRunner {
                 continue;
             }
 
-            List<String> failures = AgentSkillExecutor.runChecks(entry.config(), workDir, null);
+            List<String> failures = AgentSkillExecutor.runChecks(entry.config(), workDir, Optional.empty());
             if (!failures.isEmpty()) {
                 System.err.println("  FAILED checks: " + failures);
                 anyFailure = true;
