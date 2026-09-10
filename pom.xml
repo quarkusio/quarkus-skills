@@ -48,6 +48,9 @@
     <properties>
         <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <maven-source-plugin.version>3.4.0</maven-source-plugin.version>
+        <maven-jar-plugin.version>3.5.1</maven-jar-plugin.version>
     </properties>
 
     <build>
@@ -83,7 +86,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
-                        <version>3.3.1</version>
+                        <version>${maven-source-plugin.version}</version>
                         <executions>
                             <execution>
                                 <id>attach-sources</id>
@@ -96,7 +99,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-jar-plugin</artifactId>
-                        <version>3.4.2</version>
+                        <version>${maven-jar-plugin.version}</version>
                         <executions>
                             <execution>
                                 <id>empty-javadoc-jar</id>
