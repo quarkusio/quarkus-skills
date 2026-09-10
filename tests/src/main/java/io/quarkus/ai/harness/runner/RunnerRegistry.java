@@ -1,5 +1,6 @@
 package io.quarkus.ai.harness.runner;
 
+import io.quarkus.ai.harness.runner.acp.SmallryeAcpRunner;
 import io.quarkus.ai.harness.runner.claude.ClaudeRunner;
 import io.quarkus.ai.harness.runner.opencode.OpenCodeRunner;
 import io.quarkus.ai.harness.runner.pi.PiRunner;
@@ -11,7 +12,8 @@ import java.util.Map;
 public enum RunnerRegistry {
     PI("pi", PiRunner::new, "vertex-anthropic", "claude-opus-4-6"),
     OPENCODE("opencode", OpenCodeRunner::new, "google-vertex-anthropic", "claude-opus-4-6@default"),
-    CLAUDE("claude", ClaudeRunner::new, "", "claude-opus-4-6");
+    CLAUDE("claude", ClaudeRunner::new, "", "claude-opus-4-6"),
+    ACP("acp",SmallryeAcpRunner::new,"","");
 
     @FunctionalInterface
     interface RunnerFactory {
