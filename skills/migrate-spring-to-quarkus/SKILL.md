@@ -104,9 +104,9 @@ FOR module IN [build, code, frontend, testing, cleanup]:
 
   1. EVALUATE — inspect the project for the gate condition
   2. DECIDE
-     IF gate == ALWAYS → proceed to step 3
-     IF gate == PASS   → proceed to step 3
-     IF gate == SKIP   → log "Module {name}: SKIPPED — {reason}", mark checkbox, continue
+     IF gate == ALWAYS → log "Module {name}: ALWAYS — {condition}", proceed to step 3
+     IF gate == PASS   → log "Module {name}: PASS — {condition}", proceed to step 3
+     IF gate == SKIP   → log "Module {name}: SKIP — {reason}", mark checkbox, continue
   3. LOAD — read the module file and relevant reference files
   4. EXECUTE — follow the module instructions, adapting to the chosen strategy
   5. COMPILE — run the project's compile command (`./mvnw clean compile -DskipTests` for Maven, `./gradlew clean compileJava -x test` for Gradle)
