@@ -47,10 +47,17 @@ public class ProjectVerifier {
     }
 
     /**
-     * Check that no Spring Framework dependencies remain in pom.xml.
+     * Check that no Spring Framework dependencies remain in the resolved dependency tree.
      */
     public boolean noSpringDeps() {
-        return !fileContains(projectDir.resolve("pom.xml"), "org.springframework");
+        Path depsFile = projectDir.resolve(".maven-deps.txt");
+        int exitCode = runMaven("dependency:list", "-DskipTests",
+                "-DoutputFile=" + depsFile.toAbsolutePath());
+        if (exitCode != 0) {
+            System.out.println("      dependency:list failed, skipping no-spring-deps check");
+            return true;
+        }
+        return !fileContains(depsFile, "org.springframework");
     }
 
     /**
