@@ -2,6 +2,7 @@ package io.quarkus.ai.harness.checks;
 
 import java.io.*;
 import java.net.HttpURLConnection;
+import java.net.ServerSocket;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -24,12 +25,29 @@ import java.util.concurrent.TimeUnit;
  */
 public class ProjectVerifier {
 
-    private static final int APP_PORT = 18080;
-
     private final Path projectDir;
+    private int appPort;
 
     public ProjectVerifier(Path projectDir) {
         this.projectDir = projectDir;
+    }
+
+    private static final int PORT_RANGE_START = 8080;
+    private static final int PORT_RANGE_END = 8180;
+
+    private int findFreePort() {
+        for (int port = PORT_RANGE_START; port <= PORT_RANGE_END; port++) {
+            try (ServerSocket socket = new ServerSocket(port)) {
+                return socket.getLocalPort();
+            } catch (IOException ignored) {
+                // port in use, try next
+            }
+        }
+        try (ServerSocket socket = new ServerSocket(0)) {
+            return socket.getLocalPort();
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
     /**
@@ -176,10 +194,11 @@ public class ProjectVerifier {
     // -- app lifecycle helpers --
 
     private Process startApp() throws IOException {
+        appPort = findFreePort();
         Path startupLog = projectDir.resolve(".startup.log");
         ProcessBuilder pb = new ProcessBuilder(
                 getMvnCmd(), "quarkus:dev",
-                "-Dquarkus.http.port=" + APP_PORT,
+                "-Dquarkus.http.port=" + appPort,
                 "-Dquarkus.devservices.enabled=false",
                 "-Dquarkus.analytics.disabled=true",
                 "-Dquarkus.console.enabled=false"
@@ -194,8 +213,8 @@ public class ProjectVerifier {
         for (int i = 0; i < 30; i++) {
             Thread.sleep(2000);
             if (!process.isAlive()) return false;
-            if (httpOk("http://localhost:" + APP_PORT + "/q/health/ready") ||
-                httpOk("http://localhost:" + APP_PORT + "/")) {
+            if (httpOk("http://localhost:" + appPort + "/q/health/ready") ||
+                httpOk("http://localhost:" + appPort + "/")) {
                 return true;
             }
         }
@@ -216,7 +235,7 @@ public class ProjectVerifier {
     // -- endpoint testing --
 
     private boolean testEndpoint(HttpClient client, EndpointCheck ep) {
-        String url = "http://localhost:" + APP_PORT + ep.path();
+        String url = "http://localhost:" + appPort + ep.path();
         try {
             HttpRequest.Builder reqBuilder = HttpRequest.newBuilder()
                     .uri(URI.create(url))
